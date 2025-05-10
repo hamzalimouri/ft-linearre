@@ -1,6 +1,6 @@
 import sys
 
-from utils import load_thetas, normalize_mileage
+from utils import load_params, normalize_mileage
 
 
 def estimate_price(km, theta0, theta1):
@@ -22,10 +22,22 @@ if __name__ == "__main__":
         mileage = input("Enter the kilometers driven: ")
         # Normalize the mileage
         mileage_normalized = normalize_mileage(float(mileage))
-    except ValueError:
-        print("Please provide a valid number for kilometers.")
+    except Exception as e:
+        print(f"An error occurred while normalizing mileage: {e}")
         sys.exit(1)
     # load the theta values
-    theta0, theta1 = load_thetas('thetas.json')
-    predicted_price = estimate_price(mileage_normalized, theta0, theta1)
-    print(f"Predicted price for {mileage} km: {predicted_price:.2f}")
+    try:
+        params = load_params('thetas.json')
+        theta0, theta1 = params['theta0'], params['theta1']
+    except FileNotFoundError:
+        print("File thetas.json not found.")
+        sys.exit(1)
+    if theta0 is None or theta1 is None:
+        print("Error loading thetas.")
+        sys.exit(1)
+    try:
+        predicted_price = estimate_price(mileage_normalized, theta0, theta1)
+        print(f"Predicted price for {mileage} km: {predicted_price:.2f}")
+    except Exception as e:
+        print(f"An error occurred while predicting the price: {e}")
+        sys.exit(1)

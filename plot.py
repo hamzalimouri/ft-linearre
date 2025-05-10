@@ -1,8 +1,7 @@
+import sys
 import matplotlib.pyplot as plt
-import csv
-
 from predict import estimate_price
-from utils import load_data, load_thetas, normalize_mileage
+from utils import load_data, load_params, normalize_mileage
 
 
 def plot(data_path="data.csv"):
@@ -30,15 +29,19 @@ def plot(data_path="data.csv"):
         return
     
     # Load the theta values
-    theta0, theta1 = load_thetas('thetas.json')
+    try:
+        params = load_params('thetas.json')
+        theta0, theta1 = params['theta0'], params['theta1']
+    except FileNotFoundError:
+        print("File thetas.json not found.")
+        return
+
     if theta0 is None or theta1 is None:
         print("Error loading thetas.")
         return
-    # Normalize the mileage
-    X_min, X_max = X.min(), X.max()
     # Calculate the predicted values
     x_line = sorted(X)
-    y_line = [estimate_price(normalize_mileage(xi, X_min, X_max), theta0, theta1)
+    y_line = [estimate_price(normalize_mileage(xi), theta0, theta1)
               for xi in x_line]
     
     # Plot the data
@@ -53,4 +56,8 @@ def plot(data_path="data.csv"):
 
 
 if __name__ == "__main__":
-    plot()
+    try:
+        plot()
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        sys.exit(1)

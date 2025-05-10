@@ -13,11 +13,11 @@ def normalize_mileage(mileage, X_min=None, X_max=None):
         raise
 
 
-def load_thetas(file_path):
+def load_params(file_path):
     try:
         with open(file_path, 'r') as f:
             data = json.load(f)
-            return data['theta0'], data['theta1']
+            return data
     except FileNotFoundError:
         print(f"File {file_path} not found.")
         sys.exit(1)
